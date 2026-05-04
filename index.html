@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataLens AI - Shopify Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white p-4 md:p-10 font-sans">
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-4xl font-bold mb-2">DataLens AI</h1>
+        <p class="text-slate-400 mb-8">AI analyzes your Shopify sales and tells you what to do next</p>
+
+        <div class="bg-slate-800 p-6 rounded-xl mb-6">
+            <p class="text-slate-400">Revenue This Month</p>
+            <h2 class="text-4xl font-bold">$45,231</h2>
+            <p class="text-green-400">+12.5% vs last month</p>
+        </div>
+
+        <div class="bg-slate-800 p-6 rounded-xl mb-6">
+            <h3 class="text-xl font-bold mb-4">Ask AI Insights</h3>
+            <input id="q" placeholder="Why did sales drop yesterday?" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-lg mb-3 text-white">
+            <button onclick="ask()" class="bg-indigo-500 px-6 py-3 rounded-lg w-full font-bold hover:bg-indigo-600">Get Answer</button>
+            <div id="a" class="mt-4 text-slate-300 min-h-[50px]"></div>
+        </div>
+
+        <a href="https://marcelino685.gumroad.com/l/rjorz" class="bg-green-500 hover:bg-green-600 block text-center py-4 rounded-lg text-black font-bold text-lg">Get DataLens AI - $19/month</a>
+
+        <p class="text-center text-slate-500 text-sm mt-3">Cancel anytime. 7-day money-back guarantee.</p>
+    </div>
+
+<script>
+async function ask(){
+  const q=document.getElementById('q').value,a=document.getElementById('a');
+  if(!q){a.innerText='Type a question first';return}
+  a.innerText='AI thinking...';
+  try{
+    const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer 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'},
+      body:JSON.stringify({model:'openai/gpt-3.5-turbo',messages:[{role:'system',content:'You are a Shopify analyst. Give 1 direct action in 2 sentences max.'},{role:'user',content:q}]})
+    });
+    const d=await r.json();
+    a.innerText=d.choices[0].message.content||'Error: Add your OpenRouter API key';
+  }catch(e){a.innerText='Error. Add your OpenRouter API key first.'}
+}
+</script>
+</body>
+</html>
