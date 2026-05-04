@@ -34,15 +34,27 @@ async function ask(){
   const q=document.getElementById('q').value,a=document.getElementById('a');
   if(!q){a.innerText='Type a question first';return}
   a.innerText='AI thinking...';
-  try{
-    const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{
+ try{
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer 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'},
-      body:JSON.stringify({model:'openai/gpt-3.5-turbo',messages:[{role:'system',content:'You are a Shopify analyst. Give 1 direct action in 2 sentences max.'},{role:'user',content:q}]})
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer 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'
+      },
+      body:JSON.stringify({
+        model:'llama-3.1-8b-instant',
+        messages:[
+          {role:'system',content:'You are a Shopify data analyst. Give 1 direct action in 2 sentences max. Be specific with numbers.'},
+          {role:'user',content:q}
+        ],
+        temperature:0.2,
+        max_tokens:120
+      })
     });
     const d=await r.json();
-    a.innerText=d.choices[0].message.content||'Error: Add your OpenRouter API key';
-  }catch(e){a.innerText='Error. Add your OpenRouter API key first.'}
+    if(!r.ok) throw new Error(d.error?.message||'Groq API error');
+    a.innerText=d.choices[0].message.content;
+  }catch(e){a.innerText='ERRO: '+e.message}
 }
 </script>
 </body>
